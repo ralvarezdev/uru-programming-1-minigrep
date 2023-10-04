@@ -2,6 +2,7 @@
 
 using std::cin;
 using std::cout;
+using std::getline;
 using std::string;
 
 bool booleanQuestion(string message)
@@ -12,7 +13,7 @@ bool booleanQuestion(string message)
   while (true)
   {
     cout << message << " [y/N] ";
-    cin >> input;
+    getline(cin, input);
 
     c = tolower(input[0]);
     if (c == 'y')
