@@ -1,5 +1,6 @@
 #include "ansiCodes.h"
 #include "input.h"
+#include "ansiColor.h"
 #include "rgbColor.h"
 #include <iostream>
 #include <string>
@@ -18,18 +19,18 @@ int main()
   */
 
   // File directory
-  string tempInput, fileDir, command, findPhrase;
+  string _temp, fileDir, command, findPhrase;
 
-  cin >> tempInput; // Enter the command or the file path
-  if (tempInput[0] != '-')
+  cin >> _temp; // Enter the command or the file path
+  if (_temp[0] != '-')
   {
-    fileDir = tempInput;
+    fileDir = _temp;
     getline(cin, findPhrase); // Gets the word or phrase that will be searched throughout the file
   }
   else
   {
-    command = tempInput;
-    getline(cin, tempInput); // In case, the user typed other parameters, this prevent the app to crash
+    command = _temp;
+    getline(cin, _temp); // In case, the user typed other parameters, this prevent the app to crash
   }
 
   // If it starts with a '-', it's a command
@@ -42,24 +43,31 @@ int main()
     }
     else if (command[1] == 'c') // Change the Default Color
     {
-      bool changeFgColor, changeBgColor, genRGB;
+      bool changeFgColor, changeBgColor, genRGB, change;
       string csiCommand;
 
-      changeBgColor = booleanQuestion("\nDo you Want to Change the Background Color?");
-      changeFgColor = booleanQuestion("Do you Want to Change the Foreground Color?");
-
-      if (changeFgColor == true || changeBgColor == true)
+      do
       {
-        genRGB = booleanQuestion("Do you Want to Create the RGB Color?"); // Asks if the User Wants to Set the RGB Color or Use One of the ANSI Command Colors
-        if (genRGB == true)
+        changeBgColor = booleanQuestion("\nDo you Want to Change the Background Color?");
+        changeFgColor = booleanQuestion("Do you Want to Change the Foreground Color?");
+
+        if (changeFgColor == true || changeBgColor == true)
         {
-          csiCommand = getRGBTextColor(changeBgColor, changeFgColor); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
+          genRGB = booleanQuestion("Do you Want to Create the RGB Color?"); // Asks if the User Wants to Set the RGB Color or Use One of the ANSI Command Colors
+          if (genRGB == true)
+          {
+            csiCommand = getRGBTextColor(changeBgColor, changeFgColor); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
+          }
+          else
+          {
+            // csiCommand = getDefANSITextColor(changeBgColor, changeFgColor); // Get the Command with ANSI Default Codes
+          }
         }
-        else
-        {
-          // Get the Command with ANSI Default Codes
-        }
-      }
+
+        cout << "\n"
+             << csiCommand << "Example Text" << ANSI_RESET;
+        change = booleanQuestion("\nDo you want to change the Color?");
+      } while (change);
 
       // Save Color as the Default Configuration
     }

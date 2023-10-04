@@ -4,6 +4,7 @@
 
 using std::cin;
 using std::cout;
+using std::getline;
 using std::string;
 using std::to_string;
 
@@ -19,9 +20,15 @@ void getRGB(string message, string *red, string *green, string *blue)
   {
     cout << "\t" << message << ": ";
 
-    cin >> rgb[0]; // Red
-    cin >> rgb[1]; // Green
-    cin >> rgb[2]; // Blue
+    for (int i = 0; i < 3; i++)
+    {
+      cin >> rgb[i]; // 0: Red, 1: Green, 2: Blue
+    }
+    if (getchar() != '\n') // This prevents the program to crash if the user enters mora thna three parameters
+    {
+      string _temp;
+      getline(cin, _temp);
+    }
 
     for (int i = 0; i < 3; i++)
     {
