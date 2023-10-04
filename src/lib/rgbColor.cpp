@@ -10,7 +10,7 @@ using std::map;
 using std::string;
 using std::to_string;
 
-// Function to get the CSI Command from a String Array for the RGB part
+// Function to get the RGB part from a String Array for the Select Graphic Rendition (SGR)
 string getRGBFromString(string rgb[3])
 {
   string rgbCommand;
@@ -18,14 +18,14 @@ string getRGBFromString(string rgb[3])
   for (int i = 0; i < 3; i++)
   {
     rgbCommand.append(";");
-    rgbCommand.append(rgb[i]); // Append each color to the CSI Command
+    rgbCommand.append(rgb[i]); // Append each color to the SGR
   }
   rgbCommand.append("m");
 
   return rgbCommand;
 }
 
-// Function to get the CSI Command from an Int Array for the RGB part
+// Function to get the RGB section from an Int Array for the SG
 string getRGBFromInt(int rgb[3])
 {
   string rgbCommand, rgbColor;
@@ -45,30 +45,31 @@ string getRGBFromInt(int rgb[3])
 void printColor(int rgb[3])
 {
   const int charSizeColor = 4; // The Number of Whitespace Used on the Message with the Color as the Background
-  string csiCommand = CSI;
+  string sgrCommand = CSI;
 
-  csiCommand.append("48;2");
-  csiCommand.append(getRGBFromInt(rgb));
-  cout << csiCommand << string(charSizeColor, ' ') << ANSI_RESET << " --> " << rgb[0] << " " << rgb[1] << " " << rgb[2];
+  sgrCommand.append("48;2");
+  sgrCommand.append(getRGBFromInt(rgb));
+  cout << sgrCommand << ANSI_BOLD << string(charSizeColor, ' ') << ANSI_RESET << " --> " << rgb[0] << " " << rgb[1] << " " << rgb[2];
 }
 
 // Function to get the Red, Green and Blue Colors of the RGB 8-bit Color
 void getRGB(string message, string *red, string *green, string *blue)
 {
-  bool wrongValue = false;
+  bool wrongValue;
   int number;
   string rgb[3];
 
   cout << "\n";
   while (true)
   {
+    wrongValue = false;
     cout << "\t" << message << ": ";
 
     for (int i = 0; i < 3; i++)
     {
       cin >> rgb[i]; // 0: Red, 1: Green, 2: Blue
     }
-    if (getchar() != '\n') // This prevents the program to crash if the user enters mora thna three parameters
+    if (getchar() != '\n') // This prevents the program to crash if the user enters mora than three parameters
     {
       string _temp;
       getline(cin, _temp);
@@ -108,20 +109,20 @@ void getRGB(string message, string *red, string *green, string *blue)
   *blue = rgb[2];
 }
 
-// Function to get the CSI Command to Change the Color to either the Foreground or the Background
+// Function to get the SGR Command to Change the Color to either the Foreground or the Background
 string getRGBCommand(string colorCommand, string rgb[3])
 {
-  string csiCommand = CSI;
-  csiCommand.append(colorCommand);
-  csiCommand.append(getRGBFromString(rgb));
+  string sgrCommand = CSI;
+  sgrCommand.append(colorCommand);
+  sgrCommand.append(getRGBFromString(rgb));
 
-  return csiCommand;
+  return sgrCommand;
 }
 
-// Get ANSI Code to Change the Text Color on the Terminal with 8-bit RGB Color
+// Get the ANSI Escape Sequence to Change the Text Color on the Terminal with 8-bit RGB Color
 string getRGBTextColor(bool changeBgColor, bool changeFgColor)
 {
-  string csiCommand; // CSI Command
+  string sgrCommand; // SGR Command
 
   /* Color Suggestions
   0: Dark Grey
@@ -173,9 +174,9 @@ string getRGBTextColor(bool changeBgColor, bool changeFgColor)
   {
     string csiBg, bgColor[3];
 
-    csiBg = "48;2";
+    csiBg = "48;2";                                                    // Part of the Select Graphic Rendition Subset Command
     getRGB("Background Color", &bgColor[0], &bgColor[1], &bgColor[2]); // Ask for the RGB Colors [red; green; blue]
-    csiCommand.append(getRGBCommand(csiBg, bgColor));
+    sgrCommand.append(getRGBCommand(csiBg, bgColor));
   }
   if (changeFgColor == true)
   {
@@ -183,8 +184,8 @@ string getRGBTextColor(bool changeBgColor, bool changeFgColor)
 
     csiFg = "38;2";
     getRGB("Foreground Color", &fgColor[0], &fgColor[1], &fgColor[2]);
-    csiCommand.append(getRGBCommand(csiFg, fgColor));
+    sgrCommand.append(getRGBCommand(csiFg, fgColor));
   }
 
-  return csiCommand;
+  return sgrCommand;
 }
