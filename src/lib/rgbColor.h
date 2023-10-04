@@ -5,6 +5,6 @@ using std::string;
 #ifndef RGBCOLOR_H
 #define RGBCOLOR_H
 
-string getANSITextColor(bool changeBgColor, bool changeFgColor);
+string getRGBTextColor(bool changeBgColor, bool changeFgColor);
 
 #endif

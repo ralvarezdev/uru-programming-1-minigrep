@@ -11,8 +11,7 @@ bool booleanQuestion(string message)
 
   while (true)
   {
-    cout << "\n"
-         << message << " [y/N] ";
+    cout << message << " [y/N] ";
     cin >> input;
 
     c = tolower(input[0]);

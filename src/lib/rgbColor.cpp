@@ -73,7 +73,7 @@ string getRGBCommand(string colorCommand, string rgb[3])
 }
 
 // Get ANSI Code to Change the Text Color on the Terminal with 8-bit RGB Color
-string getANSITextColor(bool changeBgColor, bool changeFgColor)
+string getRGBTextColor(bool changeBgColor, bool changeFgColor)
 {
   string csiCommand; // CSI Command
 

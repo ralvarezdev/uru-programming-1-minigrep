@@ -1,4 +1,5 @@
 #include "input.h"
+#include "rgbColor.h"
 #include <iostream>
 #include <string>
 
@@ -6,6 +7,8 @@ using std::cin;
 using std::cout;
 using std::getline;
 using std::string;
+
+#define ANSI_RESET "\x1b[0m" // ANSI Code to reset the Text Format
 
 int main()
 {
@@ -39,18 +42,23 @@ int main()
     }
     else if (command[1] == 'c') // Change the Default Color
     {
-      bool changeFgColor, changeBgColor;
+      bool changeFgColor, changeBgColor, genRGB;
+      string csiCommand;
 
+      changeBgColor = booleanQuestion("\nDo you Want to Change the Background Color?");
       changeFgColor = booleanQuestion("Do you Want to Change the Foreground Color?");
-      changeBgColor = booleanQuestion("Do you Want to Change the Background Color?");
 
-      if (changeFgColor == true)
+      if (changeFgColor == true || changeBgColor == true)
       {
-        // Ask RGB Color
-      }
-      if (changeBgColor == true)
-      {
-        // Ask RGB Color
+        genRGB = booleanQuestion("Do you Want to Create the RGB Color?"); // Asks if the User Wants to Set the RGB Color or Use One of the ANSI Command Colors
+        if (genRGB == true)
+        {
+          csiCommand = getRGBTextColor(changeBgColor, changeFgColor); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
+        }
+        else
+        {
+          // Get the Command with ANSI Default Codes
+        }
       }
 
       // Save Color as the Default Configuration
