@@ -2,8 +2,8 @@
 
 using std::string;
 
-#ifndef RGBCOLOR_H
-#define RGBCOLOR_H
+#ifndef RGB_COLOR_H
+#define RGB_COLOR_H
 
 string getRGBTextColor(bool changeBgColor, bool changeFgColor);
 

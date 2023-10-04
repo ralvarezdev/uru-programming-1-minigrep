@@ -1,3 +1,4 @@
+#include "ansiCodes.h"
 #include "input.h"
 #include "rgbColor.h"
 #include <iostream>
@@ -8,8 +9,7 @@ using std::cout;
 using std::getline;
 using std::string;
 
-#define ANSI_RESET "\x1b[0m" // ANSI Code to reset the Text Format
-
+/* This program uses ANSI Escape Codes */
 int main()
 {
   /* --- Examples

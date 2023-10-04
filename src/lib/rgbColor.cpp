@@ -1,3 +1,4 @@
+#include "ansiCodes.h"
 #include <iostream>
 #include <string>
 
@@ -59,7 +60,7 @@ void getRGB(string message, string *red, string *green, string *blue)
 // Function to get the CSI Command to Change the Color to either the Foreground or the Background
 string getRGBCommand(string colorCommand, string rgb[3])
 {
-  string csiCommand = "\x1b["; // Control Sequence Introducer (CSI)
+  string csiCommand = CSI;
   csiCommand.append(colorCommand);
 
   for (int i = 0; i < 3; i++)
