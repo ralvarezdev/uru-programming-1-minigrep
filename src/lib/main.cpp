@@ -1,6 +1,6 @@
 #include "ansiCodes.h"
 #include "input.h"
-#include "ansiColor.h"
+#include "ansiCodes.h"
 #include "rgbColor.h"
 #include <iostream>
 #include <string>
@@ -53,19 +53,11 @@ int main()
 
         if (changeFgColor == true || changeBgColor == true)
         {
-          genRGB = booleanQuestion("Do you Want to Create the RGB Color?"); // Asks if the User Wants to Set the RGB Color or Use One of the ANSI Command Colors
-          if (genRGB == true)
-          {
-            csiCommand = getRGBTextColor(changeBgColor, changeFgColor); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
-          }
-          else
-          {
-            // csiCommand = getDefANSITextColor(changeBgColor, changeFgColor); // Get the Command with ANSI Default Codes
-          }
+          csiCommand = getRGBTextColor(changeBgColor, changeFgColor); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
         }
 
-        cout << "\n"
-             << csiCommand << "Example Text" << ANSI_RESET;
+        cout << "\n\t"
+             << csiCommand << "Example Text" << ANSI_RESET << "\n";
         change = booleanQuestion("\nDo you want to change the Color?");
       } while (change);
 
