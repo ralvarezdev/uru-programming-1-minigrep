@@ -49,19 +49,20 @@ void printColor(int rgb[3])
 
   sgrCommand.append("48;2");
   sgrCommand.append(getRGBFromInt(rgb));
-  cout << sgrCommand << string(charSizeColor, ' ') << ANSI_RESET << " --> " << rgb[0] << " " << rgb[1] << " " << rgb[2];
+  cout << sgrCommand << ANSI_BOLD << string(charSizeColor, ' ') << ANSI_RESET << " --> " << rgb[0] << " " << rgb[1] << " " << rgb[2];
 }
 
 // Function to get the Red, Green and Blue Colors of the RGB 8-bit Color
 void getRGB(string message, string *red, string *green, string *blue)
 {
-  bool wrongValue = false;
+  bool wrongValue;
   int number;
   string rgb[3];
 
   cout << "\n";
   while (true)
   {
+    wrongValue = false;
     cout << "\t" << message << ": ";
 
     for (int i = 0; i < 3; i++)
