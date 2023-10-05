@@ -17,68 +17,69 @@ using std::to_string;
 void printColorSuggestions()
 {
   const int charSizeColor = 4; // The Number of Whitespace Used on the Message with the Color as the Background
-  const int maxCol = 4;        // Max Number of Columns
-  string rgbColor, sgrCommand = CSI;
+  int n, i, j, k;              // Counters
+  string rgbColor;
 
-  /* Color Suggestions
-  0: Dark Grey
-  1: Dark Red
-  2: Dark Green
-  3: Purple
-  4: Medium Grey
-  5: Medium Red
-  6: Medium Green
-  7: Blue
-  8: Light Grey
-  9: Light Red
-  10: Light Green
-  11: Cyan
-  */
+  int colorSuggestions[6][3][3] = {
+      {{32, 32, 32},     // Dark Gray
+       {128, 128, 128},  // Medium Gray
+       {192, 192, 192}}, // Light Gray
+      {{102, 0, 51},     // Dark Pink
+       {255, 0, 127},    // Medium Pink
+       {255, 153, 204}}, // Light Pink
+      {{102, 0, 0},      // Dark Red
+       {255, 0, 0},      // Medium Red
+       {255, 153, 153}}, // Light Red
+      {{0, 102, 51},     // Dark Green
+       {0, 255, 128},    // Medium Green
+       {153, 255, 204}}, // Light Green
+      {{0, 51, 102},     // Dark Blue
+       {0, 128, 255},    // Medium Blue
+       {153, 204, 255}}, // Light Blue
+      {{51, 0, 102},     // Dark Purple
+       {127, 0, 255},    // Medium Purple
+       {204, 153, 255}}  // Light Purple
+  };
 
-  int colorSuggestions[12][3] = {
-      {32, 32, 32},
-      {102, 0, 0},
-      {0, 102, 51},
-      {0, 51, 102},
-      {128, 128, 128},
-      {255, 0, 0},
-      {0, 255, 128},
-      {0, 128, 255},
-      {192, 192, 192},
-      {255, 153, 153},
-      {153, 255, 204},
-      {153, 204, 255}};
+  // Color Table Data
+  int numberRGB = sizeof(colorSuggestions[0][0]);              // Size of Elements that are part of the RGB Array
+  int numberColors = sizeof(colorSuggestions) / numberRGB;     // Number of Different Colors
+  int tintsPerColor = sizeof(colorSuggestions[0]) / numberRGB; // Tints Variations per Color of the Same Type
+  int typesColor = numberColors / tintsPerColor;               // Number of Color Types
 
   cout << "\t**** Some Color Suggestions ***\n";
-  for (int i = 0; i < sizeof(colorSuggestions) / sizeof(colorSuggestions[0]); i++)
+  j = -1;
+  for (n = 0; n < numberColors; n++)
   {
-    if (i % maxCol == 0 || i == 0)
+    string sgrCommand = CSI; // WARNING: Its Content is being erase by Re-declaring in each Iteration
+
+    if (n % typesColor == 0 || n == 0)
     {
       cout << "\n";
+      i = 0;
+      j++;
     }
 
     // Print a Color with its Code Next to it
     sgrCommand.append("48;2");
     // Loop to get the RGB section from an Int Array for the SGR
-    for (int j = 0; j < 3; j++)
+    for (k = 0; k < 3; k++)
     {
-      rgbColor = to_string(colorSuggestions[i][j]);
+      rgbColor = to_string(colorSuggestions[i][j][k]);
       sgrCommand.append(";");
       sgrCommand.append(rgbColor);
     }
     sgrCommand.append("m");
 
     // Cell with Color
-    cout << "\t" << sgrCommand << string(charSizeColor, ' ') << ANSI_RESET << " --> ";
+    cout << "\t" << sgrCommand << string(charSizeColor, ' ') << ANSI_RESET;
     // RGB Number
-    for (int j = 0; j < 3; j++)
+    for (k = 0; k < 3; k++)
     {
-      cout << setfill(' ') << setw(3) << colorSuggestions[j];
-      if (j != 2)
-      {
-        cout << ' ';
-      }
+      cout << ' ' << setfill(' ') << setw(3) << colorSuggestions[i][j][k];
     }
+
+    i++;
   }
 }
 
@@ -95,7 +96,7 @@ void saveRGB(string message, string csiPrefix, string invokeCommand, char *filen
     while (true)
     {
       wrongValue = false;
-      cout << "\t" << message << ": ";
+      cout << "\n\t" << message << ": ";
 
       for (int i = 0; i < 3; i++)
       {
@@ -155,12 +156,16 @@ void saveRGB(string message, string csiPrefix, string invokeCommand, char *filen
 // Get the ANSI Escape Sequence to Change the Text Color on the Terminal with 8-bit RGB Color. If changeBgColor is false, it will Change the Foreground
 void getRGBTextColor(bool changeBgColor, string invokeCommand)
 {
+  printColorSuggestions();
+
   if (changeBgColor == true)
   {
-    saveRGB("\n*** Background Color", "48;2", invokeCommand, "defaultBgColor.bin");
+    char filename[] = "defaultBgColor.bin";
+    saveRGB("*** Background Color", "48;2", invokeCommand, filename);
   }
   else
   {
-    saveRGB("\n*** Foreground Color", "38;2", invokeCommand, "defaultFgColor.bin");
+    char filename[] = "defaultFgColor.bin";
+    saveRGB("*** Foreground Color", "38;2", invokeCommand, filename);
   }
 }
