@@ -11,16 +11,14 @@ using std::string;
 namespace fs = std::filesystem;
 
 // Function Used to Save the Default Text Highlight Color as a .bin
-void writeToFile(char *filename, string fileContent, int numberArgs, string invokeCommand)
+void writeToFile(char *filename, string fileContent, string invokeCommand)
 {
-  fs::path binPath; // Path where the binaries of the program are being stored
   int removeResult;
+  fs::path binPath; // Path where the binaries of the program are being stored
 
   // Check where is the file by analyzing the invokeCommand
   binPath = invokeCommand.substr(0, invokeCommand.length() - 9);
   fs::current_path(binPath);
-  cout << binPath;
-  std::cin >> removeResult;
 
   // Check if the file exists. If so, delete the file
   ifstream readFile(filename);
