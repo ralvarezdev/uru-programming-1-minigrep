@@ -1,128 +1,24 @@
 #include "ansiCodes.h"
+#include "input.h"
+#include "filesOp.h"
 #include <iostream>
-#include <map>
+#include <iomanip>
 #include <string>
 
 using std::cin;
 using std::cout;
 using std::getline;
-using std::map;
+using std::setfill;
+using std::setw;
 using std::string;
 using std::to_string;
 
-// Function to get the RGB part from a String Array for the Select Graphic Rendition (SGR)
-string getRGBFromString(string rgb[3])
-{
-  string rgbCommand;
-
-  for (int i = 0; i < 3; i++)
-  {
-    rgbCommand.append(";");
-    rgbCommand.append(rgb[i]); // Append each color to the SGR
-  }
-  rgbCommand.append("m");
-
-  return rgbCommand;
-}
-
-// Function to get the RGB section from an Int Array for the SG
-string getRGBFromInt(int rgb[3])
-{
-  string rgbCommand, rgbColor;
-
-  for (int i = 0; i < 3; i++)
-  {
-    rgbColor = to_string(rgb[i]);
-    rgbCommand.append(";");
-    rgbCommand.append(rgbColor);
-  }
-  rgbCommand.append("m");
-
-  return rgbCommand;
-}
-
-// Function to Print a Color with its Code Next to it
-void printColor(int rgb[3])
+// Print Some Color Suggestions
+void printColorSuggestions()
 {
   const int charSizeColor = 4; // The Number of Whitespace Used on the Message with the Color as the Background
-  string sgrCommand = CSI;
-
-  sgrCommand.append("48;2");
-  sgrCommand.append(getRGBFromInt(rgb));
-  cout << sgrCommand << ANSI_BOLD << string(charSizeColor, ' ') << ANSI_RESET << " --> " << rgb[0] << " " << rgb[1] << " " << rgb[2];
-}
-
-// Function to get the Red, Green and Blue Colors of the RGB 8-bit Color
-void getRGB(string message, string *red, string *green, string *blue)
-{
-  bool wrongValue;
-  int number;
-  string rgb[3];
-
-  cout << "\n";
-  while (true)
-  {
-    wrongValue = false;
-    cout << "\t" << message << ": ";
-
-    for (int i = 0; i < 3; i++)
-    {
-      cin >> rgb[i]; // 0: Red, 1: Green, 2: Blue
-    }
-    if (getchar() != '\n') // This prevents the program to crash if the user enters mora than three parameters
-    {
-      string _temp;
-      getline(cin, _temp);
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-      try
-      {
-        number = stoi(rgb[i]);          // Converts the string to an int
-        if (number < 0 || number > 255) // Checks if the Color is between 0 and 255
-        {
-          wrongValue = true;
-        }
-      }
-      catch (...) // Checks if All the Characters are Decimal Digits
-      {
-        wrongValue = true;
-      }
-
-      if (wrongValue == true)
-      {
-        cout << "\t- Wrong Value. It must be an integer in the range of 0-255\n";
-        break;
-      }
-    }
-
-    if (wrongValue == false)
-    {
-      break;
-    }
-  }
-
-  // Save the Colors on the Reference Values of the Pointers
-  *red = rgb[0];
-  *green = rgb[1];
-  *blue = rgb[2];
-}
-
-// Function to get the SGR Command to Change the Color to either the Foreground or the Background
-string getRGBCommand(string colorCommand, string rgb[3])
-{
-  string sgrCommand = CSI;
-  sgrCommand.append(colorCommand);
-  sgrCommand.append(getRGBFromString(rgb));
-
-  return sgrCommand;
-}
-
-// Get the ANSI Escape Sequence to Change the Text Color on the Terminal with 8-bit RGB Color
-string getRGBTextColor(bool changeBgColor, bool changeFgColor)
-{
-  string sgrCommand; // SGR Command
+  const int maxCol = 4;        // Max Number of Columns
+  string rgbColor, sgrCommand = CSI;
 
   /* Color Suggestions
   0: Dark Grey
@@ -139,7 +35,7 @@ string getRGBTextColor(bool changeBgColor, bool changeFgColor)
   11: Cyan
   */
 
-  int exampleColors[12][3] = {
+  int colorSuggestions[12][3] = {
       {32, 32, 32},
       {102, 0, 0},
       {0, 102, 51},
@@ -153,39 +49,118 @@ string getRGBTextColor(bool changeBgColor, bool changeFgColor)
       {153, 255, 204},
       {153, 204, 255}};
 
-  cout << "\n\t**** Some Color Suggestions ***\n";
-
-  int maxCol = 4; // Max Number of Columns
-  for (int i = 0; i < sizeof(exampleColors) / sizeof(exampleColors[0]); i++)
+  cout << "\t**** Some Color Suggestions ***\n";
+  for (int i = 0; i < sizeof(colorSuggestions) / sizeof(colorSuggestions[0]); i++)
   {
     if (i % maxCol == 0 || i == 0)
     {
-      cout << "\n\t";
+      cout << "\n";
     }
-    else
+
+    // Print a Color with its Code Next to it
+    sgrCommand.append("48;2");
+    // Loop to get the RGB section from an Int Array for the SGR
+    for (int j = 0; j < 3; j++)
     {
-      cout << "\t";
+      rgbColor = to_string(colorSuggestions[i][j]);
+      sgrCommand.append(";");
+      sgrCommand.append(rgbColor);
     }
-    printColor(exampleColors[i]);
+    sgrCommand.append("m");
+
+    // Cell with Color
+    cout << "\t" << sgrCommand << string(charSizeColor, ' ') << ANSI_RESET << " --> ";
+    // RGB Number
+    for (int j = 0; j < 3; j++)
+    {
+      cout << setfill(' ') << setw(3) << colorSuggestions[j];
+      if (j != 2)
+      {
+        cout << ' ';
+      }
+    }
   }
+}
+
+// Function to get the Red, Green and Blue Colors of the RGB 8-bit Color
+void saveRGB(string message, string csiPrefix, string invokeCommand, char *filename)
+{
+  bool wrongValue, change;
+  int n;
+  string rgb[3], sgrCommand = CSI;
 
   cout << "\n";
+  do
+  {
+    while (true)
+    {
+      wrongValue = false;
+      cout << "\t" << message << ": ";
+
+      for (int i = 0; i < 3; i++)
+      {
+        cin >> rgb[i]; // 0: Red, 1: Green, 2: Blue
+      }
+
+      if (getchar() != '\n') // This prevents the program to crash if the user enters more than three parameters
+      {
+        string temp;
+        getline(cin, temp);
+      }
+
+      for (int i = 0; i < 3; i++)
+      {
+        try
+        {
+          n = stoi(rgb[i]);     // Converts the string to an int
+          if (n < 0 || n > 255) // Checks if the Color is between 0 and 255
+          {
+            wrongValue = true;
+          }
+        }
+        catch (...) // Checks if All the Characters are Decimal Digits
+        {
+          wrongValue = true;
+        }
+
+        if (wrongValue == true)
+        {
+          cout << "\t- Wrong Value. It must be an integer in the range of 0-255\n";
+          break;
+        }
+      }
+
+      if (wrongValue == false)
+      {
+        break;
+      }
+    }
+
+    sgrCommand.append(csiPrefix);
+    // Loop to get the RGB part from a String Array for the Select Graphic Rendition (SGR)
+    for (int i = 0; i < 3; i++)
+    {
+      sgrCommand.append(";");
+      sgrCommand.append(rgb[i]); // Append each color to the SGR
+    }
+    sgrCommand.append("m");
+
+    cout << "\n\t/// " << sgrCommand << " Example Text " << ANSI_RESET << " ///\n";
+    change = booleanQuestion("\n\t--- Do you want to change the Color?");
+  } while (change);
+
+  writeToFile(filename, sgrCommand, invokeCommand); // Save Color as the Default Configuration
+}
+
+// Get the ANSI Escape Sequence to Change the Text Color on the Terminal with 8-bit RGB Color. If changeBgColor is false, it will Change the Foreground
+void getRGBTextColor(bool changeBgColor, string invokeCommand)
+{
   if (changeBgColor == true)
   {
-    string csiBg, bgColor[3];
-
-    csiBg = "48;2";                                                    // Part of the Select Graphic Rendition Subset Command
-    getRGB("Background Color", &bgColor[0], &bgColor[1], &bgColor[2]); // Ask for the RGB Colors [red; green; blue]
-    sgrCommand.append(getRGBCommand(csiBg, bgColor));
+    saveRGB("\n*** Background Color", "48;2", invokeCommand, "defaultBgColor.bin");
   }
-  if (changeFgColor == true)
+  else
   {
-    string csiFg, fgColor[3];
-
-    csiFg = "38;2";
-    getRGB("Foreground Color", &fgColor[0], &fgColor[1], &fgColor[2]);
-    sgrCommand.append(getRGBCommand(csiFg, fgColor));
+    saveRGB("\n*** Foreground Color", "38;2", invokeCommand, "defaultFgColor.bin");
   }
-
-  return sgrCommand;
 }
