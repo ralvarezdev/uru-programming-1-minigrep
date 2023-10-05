@@ -92,7 +92,7 @@ void getRGB(string message, string *red, string *green, string *blue)
 
       if (wrongValue == true)
       {
-        cout << "\t- Wrong Value. It must be in the range of 0-255\n";
+        cout << "\t- Wrong Value. It must be an integer in the range of 0-255\n";
         break;
       }
     }
@@ -129,14 +129,14 @@ string getRGBTextColor(bool changeBgColor, bool changeFgColor)
   1: Dark Red
   2: Dark Green
   3: Purple
-4: Medium Grey
-5: Medium Red
-6: Medium Green
-7: Blue
-8: Light Grey
-9: Light Red
-10: Light Green
-11: Cyan
+  4: Medium Grey
+  5: Medium Red
+  6: Medium Green
+  7: Blue
+  8: Light Grey
+  9: Light Red
+  10: Light Green
+  11: Cyan
   */
 
   int exampleColors[12][3] = {
