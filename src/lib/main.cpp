@@ -1,4 +1,5 @@
 #include "ansiCodes.h"
+#include "filesOp.h"
 #include "input.h"
 #include "ansiCodes.h"
 #include "rgbColor.h"
@@ -28,7 +29,7 @@ void helpMessage()
 }
 
 /* This program uses ANSI Escape Codes */
-int main(int argv, char *argc[])
+int main(int argc, char **argv)
 {
   /* --- Examples
   1: checking matches .\test.txt // Here, the program searchs for the phrase "checking matches" in the test.txt file
@@ -36,9 +37,10 @@ int main(int argv, char *argc[])
   */
 
   bool isCommand;
-  string fileDir, findPhrase, command;
+  char command;
+  string fileDir, findPhrase;
 
-  if (argv < 2)
+  if (argc < 2)
   {
     // If the program was executed outside of the terminal
 
@@ -54,20 +56,21 @@ int main(int argv, char *argc[])
     }
     else
     {
-      command = _temp;
+      command = _temp[1];
       isCommand = true;
       getline(cin, _temp); // In case, the user typed other parameters, this prevent the app to crash
     }
   }
-  else if (argv == 2)
+  else if (argc == 2)
   {
-    if (argc[1][0] == '-')
+    if (argv[1][0] == '-')
     {
-      command = argc[1]; // If it Starts with a '-', it's a Built-in Command of the Program
+      command = argv[1][1]; // If it Starts with a '-', it's a Built-in Command of the Program
       isCommand = true;
     }
     else
-    { // Wrong Command
+    {
+      // Wrong Command
       cout << "\tWrong Command...\n\n\tAvalaible Commands:\n\t- Config and Help: [-h|-c]\n\t- To Find the Phrase: [phrase... filePath...]";
       return -1; // Error
     }
@@ -76,23 +79,24 @@ int main(int argv, char *argc[])
   {
     // If the program is being executed through the terminal
 
-    int numberWords = sizeof(*argc) - 2;
+    int numberWords = argc - 2;
 
-    fileDir = argc[-1]; // The last argument is the file path
-    for (int i = 2; i < numberWords + 2; i++)
+    fileDir = argv[argc - 1]; // The last argument is the file path
+    for (int i = 1; i < numberWords + 1; i++)
     {
-      findPhrase.append(argc[i]); // The arguments after the command that invokes the program and before the file path
+      findPhrase.append(argv[i]); // The arguments after the command that invokes the program and before the file path
+      findPhrase.append(" ");
     }
   }
 
   if (isCommand = true)
   {
     // Help command
-    if (command[1] == 'h')
+    if (command == 'h')
     {
       helpMessage(); // Print Helper Message
     }
-    else if (command[1] == 'c') // Change the Default Color
+    else if (command == 'c') // Change the Default Color
     {
       bool changeFgColor, changeBgColor, change;
       string sgrCommand;
@@ -112,7 +116,9 @@ int main(int argv, char *argc[])
         }
       } while (change);
 
-      // Save Color as the Default Configuration
+      char filename[] = "colorDefault.bin";
+
+      writeToFile(filename, sgrCommand, argc, argv[0]); // Save Color as the Default Configuration
     }
     else
     {
