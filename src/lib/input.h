@@ -6,5 +6,6 @@ using std::string;
 #define INPUT_H
 
 bool booleanQuestion(string message);
+void helpMessage();
 
 #endif
