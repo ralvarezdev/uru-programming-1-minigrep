@@ -86,6 +86,10 @@ int main(int argc, char **argv)
         {
           break;
         }
+        else
+        {
+          cout << "\n\n";
+        }
       case 'f':
         getRGBTextColor(false, argv[0]);
         break;
