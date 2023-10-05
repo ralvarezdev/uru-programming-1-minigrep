@@ -17,15 +17,10 @@ void writeToFile(char *filename, string fileContent, int numberArgs, string invo
   int removeResult;
 
   // Check where is the file by analyzing the invokeCommand
-  if (numberArgs == 0)
-  {
-    fs::path currentPath = fs::current_path();
-  }
-  else
-  {
-    binPath = invokeCommand.substr(0, invokeCommand.length() - 9);
-    fs::current_path(binPath);
-  }
+  binPath = invokeCommand.substr(0, invokeCommand.length() - 9);
+  fs::current_path(binPath);
+  cout << binPath;
+  std::cin >> removeResult;
 
   // Check if the file exists. If so, delete the file
   ifstream readFile(filename);
