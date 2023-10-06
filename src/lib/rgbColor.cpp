@@ -61,7 +61,7 @@ void printColorSuggestions()
     }
 
     // Print a Color with its Code Next to it
-    sgrCommand.append("48;2");
+    sgrCommand.append(ANSI_RGB_BG_COLOR);
     // Loop to get the RGB section from an Int Array for the SGR
     for (k = 0; k < 3; k++)
     {
@@ -84,23 +84,25 @@ void printColorSuggestions()
 }
 
 // Function to get the Red, Green and Blue Colors of the RGB 8-bit Color
-void saveRGB(string message, string csiPrefix, string invokeCommand, char *filename)
+void saveRGB(string message, string csiPrefix, bool changeBgColor)
 {
   bool wrongValue, change;
-  int n;
-  string rgb[3], sgrCommand = CSI;
+  int n, rgbInt[3];
+  string rgbString[3], sgrCommand, sgrAuxCommand; // The sgrAuxCommand is Used to check the other Default Text Format
 
   cout << "\n";
   do
   {
     while (true)
     {
+      sgrCommand = CSI;
+
       wrongValue = false;
       cout << "\n\t" << message << ": ";
 
       for (int i = 0; i < 3; i++)
       {
-        cin >> rgb[i]; // 0: Red, 1: Green, 2: Blue
+        cin >> rgbString[i]; // 0: Red, 1: Green, 2: Blue
       }
 
       if (getchar() != '\n') // This prevents the program to crash if the user enters more than three parameters
@@ -113,10 +115,14 @@ void saveRGB(string message, string csiPrefix, string invokeCommand, char *filen
       {
         try
         {
-          n = stoi(rgb[i]);     // Converts the string to an int
-          if (n < 0 || n > 255) // Checks if the Color is between 0 and 255
+          n = stoi(rgbString[i]); // Converts the string to an int
+          if (n < 0 || n > 255)   // Checks if the Color is between 0 and 255
           {
             wrongValue = true;
+          }
+          else
+          {
+            rgbInt[i] = n; // Saved as an Int to Get Rid of Floats if the User Entered One
           }
         }
         catch (...) // Checks if All the Characters are Decimal Digits
@@ -124,14 +130,14 @@ void saveRGB(string message, string csiPrefix, string invokeCommand, char *filen
           wrongValue = true;
         }
 
-        if (wrongValue == true)
+        if (wrongValue)
         {
           cout << "\t- Wrong Value. It must be an integer in the range of 0-255\n";
           break;
         }
       }
 
-      if (wrongValue == false)
+      if (!wrongValue)
       {
         break;
       }
@@ -142,30 +148,39 @@ void saveRGB(string message, string csiPrefix, string invokeCommand, char *filen
     for (int i = 0; i < 3; i++)
     {
       sgrCommand.append(";");
-      sgrCommand.append(rgb[i]); // Append each color to the SGR
+      sgrCommand.append(to_string(rgbInt[i])); // Append each color to the SGR
     }
     sgrCommand.append("m");
 
-    cout << "\n\t/// " << sgrCommand << " Example Text " << ANSI_RESET << " ///\n";
-    change = booleanQuestion("\n\t--- Do you want to change the Color?");
-  } while (change);
+    sgrAuxCommand = readDefaultColor(!changeBgColor); // Read the Other Default Text Color. If the User is Changing Background, this will Read the Default Foreground
 
-  writeToFile(filename, sgrCommand, invokeCommand); // Save Color as the Default Configuration
-}
+    cout
+        << "\n\t/// " << sgrCommand << sgrAuxCommand << " Example Text " << ANSI_RESET << " ///\n";
+    change = booleanQuestion("\n\t--- Do you want to save this Color as Default?");
+  } while (!change);
 
-// Get the ANSI Escape Sequence to Change the Text Color on the Terminal with 8-bit RGB Color. If changeBgColor is false, it will Change the Foreground
-void getRGBTextColor(bool changeBgColor, string invokeCommand)
-{
-  printColorSuggestions();
-
-  if (changeBgColor == true)
+  // Save Color as the Default Configuration
+  if (changeBgColor)
   {
-    char filename[] = "defaultBgColor.bin";
-    saveRGB("*** Background Color", "48;2", invokeCommand, filename);
+    writeDefaultColor(bgColorFilename, sgrCommand);
   }
   else
   {
-    char filename[] = "defaultFgColor.bin";
-    saveRGB("*** Foreground Color", "38;2", invokeCommand, filename);
+    writeDefaultColor(fgColorFilename, sgrCommand);
+  }
+}
+
+// Get the ANSI Escape Sequence to Change the Text Color on the Terminal with 8-bit RGB Color. If changeBgColor is false, it will Change the Foreground
+void getRGBTextColor(bool changeBgColor)
+{
+  printColorSuggestions();
+
+  if (changeBgColor)
+  {
+    saveRGB("*** Background Color", ANSI_RGB_BG_COLOR, changeBgColor);
+  }
+  else
+  {
+    saveRGB("*** Foreground Color", ANSI_RGB_FG_COLOR, changeBgColor);
   }
 }
