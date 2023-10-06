@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <string.h> // Just for the strlen function
 
 using std::cin;
 using std::cout;
@@ -76,7 +77,7 @@ int main(int argc, char **argv)
 
         string tempPath; // File directory path inside the userPath
         char c;
-        for (int i = 2; i < sizeof(argv[argc - 1]) / sizeof(char); i++)
+        for (int i = 2; i < strlen(argv[argc - 1]); i++)
         {
           c = argv[argc - 1][i];
           if (c != '/')
@@ -88,14 +89,12 @@ int main(int argc, char **argv)
             tempPath.append("\\");
           }
         }
-
         fileDir = fileDir / tempPath; // Join the two filepaths
       }
       else
       {
         fileDir = argv[argc - 1]; // The last argument is the complete file path
       }
-      cout << fileDir;
 
       for (int i = 1; i < argc - 1; i++)
       {
@@ -139,11 +138,90 @@ int main(int argc, char **argv)
   else
   {
     // Output Message
-    string findMessage;
+    string outputMessage;
+    int findLength = findPhrase.length() - 1; // Length of the Phrase that will be found. It has a whitespace at the end, so I substract a minus 1
 
     // Reads, and prints the file
-    string sgrBgCommand = readDefaultColor(true);  // SGR Command of the Default Background Color
-    string sgrFgCommand = readDefaultColor(false); // SGR Command of the Default Foreground Color
+    string sgrCommand = readDefaultColor(true); // SGR Command of the Default Background Color
+    sgrCommand.append(readDefaultColor(false)); // SGR Command of the Default Foreground Color
+
+    // Checking File...
+    ifstream findInFile;
+    findInFile.open(fileDir);
+
+    bool newLine = false; // Boolean to check if there's a new line
+    char c;
+    string tempMessage; // Temporary Message that later will be append to the outputMessage
+    int i = 0, j = 0, lastLineFound;
+    int timesFound, foundInLines; // Counters
+    if (!findInFile)
+    {
+      cout << "Error: File doesn't Exit or doesn't have the Permissions to Read it";
+      findInFile.close();
+      return -1;
+    }
+    else
+    {
+      while (true)
+      {
+        findInFile >> std::noskipws >> c; // Doesn't skip Whitespaces
+        if (findInFile.good())
+        {
+          if (c != findPhrase[i] || i == findLength)
+          {
+            if (i != 0)
+            {
+              tempMessage = ""; // Clear string
+              i = 0;
+
+              if (i != findLength)
+              {
+                outputMessage.append(tempMessage);
+              }
+            }
+
+            outputMessage += c;
+            if (c == '\n')
+            {
+              newLine = true;
+              j++;
+            }
+          }
+          else
+          {
+            cout << j;
+            tempMessage += c;
+            i++;
+
+            if (i == findLength)
+            {
+              timesFound++; // Number of coincidences
+              outputMessage.append(sgrCommand);
+              outputMessage.append(tempMessage);
+              outputMessage.append(ANSI_RESET);
+
+              if (lastLineFound != j)
+              {
+                lastLineFound = j;
+                foundInLines++;
+                newLine = false;
+              }
+            }
+          }
+        }
+        else
+        {
+          break;
+        }
+      }
+    }
+    findInFile.close();
+
+    cout << outputMessage;
+    cout << '\n'
+         << string(50, '-') << '\n';
+    cout << sgrCommand << string(2, ' ') << timesFound << string(2, ' ') << ANSI_RESET << " Coincidences in ";
+    cout << sgrCommand << string(2, ' ') << foundInLines << string(2, ' ') << ANSI_RESET << " Lines";
   }
   return 0;
 }
