@@ -169,17 +169,16 @@ int main(int argc, char **argv)
         {
           if (c != findPhrase[i] || i == findLength)
           {
-            if (i != 0)
+            if (i != findLength)
             {
-              tempMessage = ""; // Clear string
-              i = 0;
-
-              if (i != findLength)
-              {
-                outputMessage.append(tempMessage);
-              }
+              outputMessage.append(tempMessage);
             }
+            tempMessage = ""; // Clear string
+            i = 0;
+          }
 
+          if (c != findPhrase[i])
+          {
             outputMessage += c;
             if (c == '\n')
             {
@@ -189,7 +188,6 @@ int main(int argc, char **argv)
           }
           else
           {
-            cout << j;
             tempMessage += c;
             i++;
 
