@@ -19,11 +19,12 @@ int main(int argc, char **argv)
   2: -h // Here the program will print the Help Message
   */
 
-  bool isCommand;
+  bool isCommand = false;
   char command;
   string fileDir, findPhrase;
   string errorMessage = "Error: Wrong Command. Run '-h' to Check the Available Commands"; // Message Print when there's a Wrong Command as Input
-  char filename[] = "colorDefault.bin";                                                   // Filename of the binary with the Default Text Format
+
+  changeCwdToBin(argv[0]); // Change Current Working Directory
 
   if (argc == 1)
   {
@@ -59,8 +60,9 @@ int main(int argc, char **argv)
     }
     else
     {
+      isCommand = false;
       fileDir = argv[argc - 1]; // The last argument is the file path
-      for (int i = 1; i < argc - 2; i++)
+      for (int i = 1; i < argc - 1; i++)
       {
         findPhrase.append(argv[i]); // The arguments after the command that invokes the program and before the file path
         findPhrase.append(" ");
@@ -68,7 +70,7 @@ int main(int argc, char **argv)
     }
   }
 
-  if (isCommand = true)
+  if (isCommand)
   {
     if (command == 'h')
     {
@@ -80,7 +82,7 @@ int main(int argc, char **argv)
       {
       case 'c':
       case 'b':
-        getRGBTextColor(true, argv[0]); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
+        getRGBTextColor(true); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
 
         if (command != 'c')
         {
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
           cout << "\n\n";
         }
       case 'f':
-        getRGBTextColor(false, argv[0]);
+        getRGBTextColor(false);
         break;
       default:
         cout << errorMessage;
@@ -102,6 +104,10 @@ int main(int argc, char **argv)
   else
   {
     // Reads, and prints the file
+    string sgrBgCommand = readFile(true);  // SGR Command of the Default Background Color
+    string sgrFgCommand = readFile(false); // SGR Command of the Default Foreground Color
+
+    // Checking File...
   }
   return 0;
 }
