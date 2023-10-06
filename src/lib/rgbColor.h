@@ -6,6 +6,6 @@ using std::string;
 #define RGB_COLOR_H
 
 void printColorSuggestions();
-void getRGBTextColor(bool changeBgColor, string invokeCommand);
+void getRGBTextColor(bool changeBgColor);
 
 #endif

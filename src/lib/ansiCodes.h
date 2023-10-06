@@ -17,4 +17,8 @@ Select Graphic Rendition Control Sequences
 // ANSI Code to Set a Slow Blink to the Text
 #define ANSI_SLOW_BLINK "\x1b[5m"
 
+// The Command Prefix of the RGB Code
+#define ANSI_RGB_BG_COLOR "48;2"
+#define ANSI_RGB_FG_COLOR "38;2"
+
 #endif
