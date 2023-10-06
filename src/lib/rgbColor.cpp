@@ -88,7 +88,7 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
 {
   bool wrongValue, change;
   int n, rgbInt[3];
-  string rgbString[3], sgrCommand;
+  string rgbString[3], sgrCommand, sgrAuxCommand; // The sgrAuxCommand is Used to check the other Default Text Format
 
   cout << "\n";
   do
@@ -152,9 +152,12 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
     }
     sgrCommand.append("m");
 
-    cout << "\n\t/// " << sgrCommand << " Example Text " << ANSI_RESET << " ///\n";
-    change = booleanQuestion("\n\t--- Do you want to change the Color?");
-  } while (change);
+    sgrAuxCommand = readDefaultColor(!changeBgColor); // Read the Other Default Text Color. If the User is Changing Background, this will Read the Default Foreground
+
+    cout
+        << "\n\t/// " << sgrCommand << sgrAuxCommand << " Example Text " << ANSI_RESET << " ///\n";
+    change = booleanQuestion("\n\t--- Do you want to save this Color as Default?");
+  } while (!change);
 
   // Save Color as the Default Configuration
   if (changeBgColor)
