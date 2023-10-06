@@ -9,7 +9,7 @@ extern char bgColorFilename[], fgColorFilename[];
 #define FILES_OP_H
 
 void changeCwdToBin(string invokeCommand);
-void writeToFile(char *filename, string fileContent);
-string readFile(bool readBgColor);
+void writeDefaultColor(char *filename, string fileContent);
+string readDefaultColor(bool readBgColor);
 
 #endif

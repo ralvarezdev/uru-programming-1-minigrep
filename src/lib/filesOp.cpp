@@ -24,7 +24,7 @@ void changeCwdToBin(string invokeCommand)
 }
 
 // Function Used to Save the Default Text Highlight Color as a .bin
-void writeToFile(char *filename, string fileContent)
+void writeDefaultColor(char *filename, string fileContent)
 {
   int removeResult;
 
@@ -68,7 +68,7 @@ void writeToFile(char *filename, string fileContent)
 }
 
 // Function to Read the Default Background and Foreground Text Color Format SGR Commands
-string readFile(bool readBgColor)
+string readDefaultColor(bool readBgColor)
 {
   char c;
   string sgrCommand;

@@ -104,8 +104,8 @@ int main(int argc, char **argv)
   else
   {
     // Reads, and prints the file
-    string sgrBgCommand = readFile(true);  // SGR Command of the Default Background Color
-    string sgrFgCommand = readFile(false); // SGR Command of the Default Foreground Color
+    string sgrBgCommand = readDefaultColor(true);  // SGR Command of the Default Background Color
+    string sgrFgCommand = readDefaultColor(false); // SGR Command of the Default Foreground Color
 
     // Checking File...
   }
