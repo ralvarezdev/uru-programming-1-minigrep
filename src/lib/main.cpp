@@ -4,12 +4,17 @@
 #include "ansiCodes.h"
 #include "rgbColor.h"
 #include <iostream>
+#include <filesystem>
+#include <fstream>
 #include <string>
 
 using std::cin;
 using std::cout;
 using std::getline;
+using std::ifstream;
 using std::string;
+
+namespace fs = std::filesystem;
 
 /* This program uses ANSI Escape Codes */
 int main(int argc, char **argv)
@@ -21,10 +26,12 @@ int main(int argc, char **argv)
 
   bool isCommand = false;
   char command;
-  string fileDir, findPhrase;
+  string findPhrase;
   string errorMessage = "Error: Wrong Command. Run '-h' to Check the Available Commands"; // Message Print when there's a Wrong Command as Input
 
-  changeCwdToBin(argv[0]); // Change Current Working Directory
+  fs::path fileDir;
+  fs::path userPath = fs::current_path();
+  fs::path binPath = changeCwdToBin(argv[0]); // Change Current Working Directory
 
   if (argc == 1)
   {
@@ -61,7 +68,35 @@ int main(int argc, char **argv)
     else
     {
       isCommand = false;
-      fileDir = argv[argc - 1]; // The last argument is the file path
+
+      // File Path
+      if (argv[argc - 1][0] == '.')
+      {
+        fileDir = userPath;
+
+        string tempPath; // File directory path inside the userPath
+        char c;
+        for (int i = 2; i < sizeof(argv[argc - 1]) / sizeof(char); i++)
+        {
+          c = argv[argc - 1][i];
+          if (c != '/')
+          {
+            tempPath += c;
+          }
+          else
+          {
+            tempPath.append("\\");
+          }
+        }
+
+        fileDir = fileDir / tempPath; // Join the two filepaths
+      }
+      else
+      {
+        fileDir = argv[argc - 1]; // The last argument is the complete file path
+      }
+      cout << fileDir;
+
       for (int i = 1; i < argc - 1; i++)
       {
         findPhrase.append(argv[i]); // The arguments after the command that invokes the program and before the file path
@@ -103,11 +138,12 @@ int main(int argc, char **argv)
   }
   else
   {
+    // Output Message
+    string findMessage;
+
     // Reads, and prints the file
     string sgrBgCommand = readDefaultColor(true);  // SGR Command of the Default Background Color
     string sgrFgCommand = readDefaultColor(false); // SGR Command of the Default Foreground Color
-
-    // Checking File...
   }
   return 0;
 }

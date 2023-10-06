@@ -4,7 +4,6 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <typeinfo>
 
 using std::cin;
 using std::cout;

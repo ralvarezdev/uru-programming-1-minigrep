@@ -17,10 +17,11 @@ char bgColorFilename[] = "defaultBgColor.bin";
 char fgColorFilename[] = "defaultFgColor.bin";
 
 // Function to Change the Current Path to the Directory where the .exe is Saved
-void changeCwdToBin(string invokeCommand)
+fs::path changeCwdToBin(string invokeCommand)
 {
   fs::path binPath = invokeCommand.substr(0, invokeCommand.length() - 9); // Path where the binaries of the program are being stored
   fs::current_path(binPath);
+  return binPath;
 }
 
 // Function Used to Save the Default Text Highlight Color as a .bin
