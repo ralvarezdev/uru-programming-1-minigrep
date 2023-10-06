@@ -87,20 +87,22 @@ void printColorSuggestions()
 void saveRGB(string message, string csiPrefix, bool changeBgColor)
 {
   bool wrongValue, change;
-  int n;
-  string rgb[3], sgrCommand = CSI;
+  int n, rgbInt[3];
+  string rgbString[3], sgrCommand;
 
   cout << "\n";
   do
   {
     while (true)
     {
+      sgrCommand = CSI;
+
       wrongValue = false;
       cout << "\n\t" << message << ": ";
 
       for (int i = 0; i < 3; i++)
       {
-        cin >> rgb[i]; // 0: Red, 1: Green, 2: Blue
+        cin >> rgbString[i]; // 0: Red, 1: Green, 2: Blue
       }
 
       if (getchar() != '\n') // This prevents the program to crash if the user enters more than three parameters
@@ -113,10 +115,14 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
       {
         try
         {
-          n = stoi(rgb[i]);     // Converts the string to an int
-          if (n < 0 || n > 255) // Checks if the Color is between 0 and 255
+          n = stoi(rgbString[i]); // Converts the string to an int
+          if (n < 0 || n > 255)   // Checks if the Color is between 0 and 255
           {
             wrongValue = true;
+          }
+          else
+          {
+            rgbInt[i] = n; // Saved as an Int to Get Rid of Floats if the User Entered One
           }
         }
         catch (...) // Checks if All the Characters are Decimal Digits
@@ -142,7 +148,7 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
     for (int i = 0; i < 3; i++)
     {
       sgrCommand.append(";");
-      sgrCommand.append(rgb[i]); // Append each color to the SGR
+      sgrCommand.append(to_string(rgbInt[i])); // Append each color to the SGR
     }
     sgrCommand.append("m");
 
@@ -153,11 +159,11 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
   // Save Color as the Default Configuration
   if (changeBgColor)
   {
-    writeToFile(bgColorFilename, sgrCommand);
+    writeDefaultColor(bgColorFilename, sgrCommand);
   }
   else
   {
-    writeToFile(fgColorFilename, sgrCommand);
+    writeDefaultColor(fgColorFilename, sgrCommand);
   }
 }
 
