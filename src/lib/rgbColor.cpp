@@ -153,11 +153,11 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
   // Save Color as the Default Configuration
   if (changeBgColor)
   {
-    writeToFile(bgColorFilename, sgrCommand);
+    writeDefaultColor(bgColorFilename, sgrCommand);
   }
   else
   {
-    writeToFile(fgColorFilename, sgrCommand);
+    writeDefaultColor(fgColorFilename, sgrCommand);
   }
 }
 
