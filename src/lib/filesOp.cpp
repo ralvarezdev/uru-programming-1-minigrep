@@ -103,7 +103,7 @@ string readDefaultColor(bool readBgColor)
   else
   {
     // SGR Commands if there's any error when trying to open the files
-    string sgrCommand = ANSI_START;
+    sgrCommand = CSI;
     if (readBgColor)
     {
       sgrCommand.append(ANSI_RGB_BG_COLOR);
