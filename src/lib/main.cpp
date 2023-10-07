@@ -137,87 +137,143 @@ int main(int argc, char **argv)
   }
   else
   {
-    // Output Message
-    string outputMessage;
-    int findLength = findPhrase.length() - 1; // Length of the Phrase that will be found. It has a whitespace at the end, so I substract a minus 1
-
     // Reads, and prints the file
     string sgrCommand = readDefaultColor(true); // SGR Command of the Default Background Color
     sgrCommand.append(readDefaultColor(false)); // SGR Command of the Default Foreground Color
 
-    // Checking File...
-    ifstream findInFile;
-    findInFile.open(fileDir);
-
-    bool newLine = false; // Boolean to check if there's a new line
+    bool foundInCurrentLine;
     char c;
-    string tempMessage; // Temporary Message that later will be append to the outputMessage
-    int i = 0, j = 0, lastLineFound;
-    int timesFound, foundInLines; // Counters
+    int timesFound = 0, foundInLines = 0;     // Counters
+    int findLength = findPhrase.length() - 1; // Length of the Phrase that will be found. It has a whitespace at the end, so I substract a minus 1
+    string outputMessage;                     // Output Message
+
+    ifstream findInFile;
+    findInFile.open(fileDir); // Checking File...
     if (!findInFile)
     {
       cout << "Error: File doesn't Exit or doesn't have the Permissions to Read it";
       findInFile.close();
       return -1;
     }
-    else
+    else if (findLength != 1)
     {
-      while (true)
-      {
-        findInFile >> std::noskipws >> c; // Doesn't skip Whitespaces
-        if (findInFile.good())
-        {
-          if (c != findPhrase[i] || i == findLength)
-          {
-            if (i != findLength)
-            {
-              outputMessage.append(tempMessage);
-            }
-            tempMessage = ""; // Clear string
-            i = 0;
-          }
+      // Read line by line
+      bool coincidence;
+      string line;
+      int lineLength, lineLeftLength, i;
 
-          if (c != findPhrase[i])
+      while (getline(findInFile, line))
+      {
+        i = 0;
+        foundInCurrentLine = false;
+        coincidence = false;
+        lineLength = line.length();  // Length of the line read
+        lineLeftLength = lineLength; // Number of characters of the line string that hasn't been read
+
+        for (int s = 0; s < lineLength; s++)
+        {
+          c = line[s]; // Get character of string
+          if (!coincidence)
           {
-            outputMessage += c;
-            if (c == '\n')
+            if (c != findPhrase[0])
             {
-              newLine = true;
-              j++;
+              i++;
+            }
+            else
+            {
+              coincidence = true;
+              if (i != 0)
+              {
+                outputMessage.append(line.substr(s - i, i));
+              }
+              i = 1;
             }
           }
           else
           {
-            tempMessage += c;
-            i++;
-
-            if (i == findLength)
+            if (i != findLength - 1)
+            {
+              if (c != findPhrase[i])
+              {
+                coincidence = false;
+              }
+              i++;
+            }
+            else if (c != findPhrase[i])
+            {
+              i++;
+              coincidence = false;
+            }
+            else
             {
               timesFound++; // Number of coincidences
               outputMessage.append(sgrCommand);
-              outputMessage.append(tempMessage);
+              outputMessage.append(line.substr(s - i, findLength));
               outputMessage.append(ANSI_RESET);
 
-              if (lastLineFound != j)
+              i = 0;
+              coincidence = false;
+
+              if (!foundInCurrentLine)
               {
-                lastLineFound = j;
                 foundInLines++;
-                newLine = false;
+                foundInCurrentLine = true;
               }
+            }
+          }
+
+          lineLeftLength--;
+
+          if ((findLength > lineLeftLength + i && coincidence) || (findLength > lineLeftLength && !coincidence))
+          {
+            outputMessage.append(line.substr(lineLength - lineLeftLength - i, lineLeftLength + i));
+            break;
+          }
+        }
+        outputMessage += '\n';
+      }
+    }
+    else
+    {
+      // Read Char by Char
+      while (true)
+      {
+        findInFile >> std::noskipws >> c;
+        if (findInFile.good())
+        {
+          if (c == '\n')
+          {
+            foundInCurrentLine = false;
+          }
+
+          if (c != findPhrase[0])
+          {
+            outputMessage += c;
+          }
+          else
+          {
+            timesFound++;
+            outputMessage.append(sgrCommand);
+            outputMessage += c;
+            outputMessage.append(ANSI_RESET);
+
+            if (!foundInCurrentLine)
+            {
+              foundInLines++;
+              foundInCurrentLine = false;
             }
           }
         }
         else
         {
+          outputMessage += '\n';
           break;
         }
       }
     }
     findInFile.close();
 
-    cout << outputMessage;
-    cout << '\n'
-         << string(50, '-') << '\n';
+    cout << outputMessage << string(50, '-') << '\n';
     cout << sgrCommand << string(2, ' ') << timesFound << string(2, ' ') << ANSI_RESET << " Coincidences in ";
     cout << sgrCommand << string(2, ' ') << foundInLines << string(2, ' ') << ANSI_RESET << " Lines";
   }
