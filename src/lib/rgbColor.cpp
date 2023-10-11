@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include "input.h"
 
 using std::cin;
 using std::cout;
@@ -19,6 +20,7 @@ void printColorSuggestions()
   const int charSizeColor = 4; // The Number of Whitespace Used on the Message with the Color as the Background
   int n, i, j, k;              // Counters
   string rgbColor;
+  string sgrCommand = readCompleteDefaultColor();
 
   int colorSuggestions[6][3][3] = {
       {{32, 32, 32},     // Dark Gray
@@ -47,17 +49,22 @@ void printColorSuggestions()
   int tintsPerColor = sizeof(colorSuggestions[0]) / numberRGB; // Tints Variations per Color of the Same Type
   int typesColor = numberColors / tintsPerColor;               // Number of Color Types
 
-  cout << "\t**** Some Color Suggestions ***\n";
+  cout << ANSI_CLEAR; // Clear terminal
+  printTitle(sgrCommand, "Some Color Suggestions");
   j = -1;
   for (n = 0; n < numberColors; n++)
   {
-    string sgrCommand = CSI; // WARNING: Its Content is being erase by Re-declaring in each Iteration
+    sgrCommand = CSI;
 
     if (n % typesColor == 0 || n == 0)
     {
       cout << "\n";
       i = 0;
       j++;
+    }
+    else
+    {
+      cout << string(2, ' '); // Whitespace Separation between Colors
     }
 
     // Print a Color with its Code Next to it
@@ -72,8 +79,8 @@ void printColorSuggestions()
     sgrCommand.append("m");
 
     // Cell with Color
-    cout << "\t" << sgrCommand << string(charSizeColor, ' ') << ANSI_RESET;
-    // RGB Number
+    cout << sgrCommand << string(charSizeColor, ' ') << ANSI_RESET;
+    // RGB Color Number
     for (k = 0; k < 3; k++)
     {
       cout << ' ' << setfill(' ') << setw(3) << colorSuggestions[i][j][k];
@@ -95,11 +102,12 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
   {
     while (true)
     {
+      sgrCommand = readCompleteDefaultColor(); // SGR Command for the Title
+      cout << '\n';
+      printTitle(sgrCommand, message);
+
       sgrCommand = CSI;
-
       wrongValue = false;
-      cout << "\n\t" << message << ": ";
-
       for (int i = 0; i < 3; i++)
       {
         cin >> rgbString[i]; // 0: Red, 1: Green, 2: Blue
@@ -116,7 +124,7 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
         try
         {
           n = stoi(rgbString[i]); // Converts the string to an int
-          if (n < 0 || n > 255)   // Checks if the Color is between 0 and 255
+          if (n < 0 || n > 255)   // Checks if the Color is not between 0 and 255
           {
             wrongValue = true;
           }
@@ -138,13 +146,11 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
       }
 
       if (!wrongValue)
-      {
         break;
-      }
     }
 
     sgrCommand.append(csiPrefix);
-    // Loop to get the RGB part from a String Array for the Select Graphic Rendition (SGR)
+    // Loop to get the RGB Command for the Select Graphic Rendition (SGR)
     for (int i = 0; i < 3; i++)
     {
       sgrCommand.append(";");
@@ -154,9 +160,8 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
 
     sgrAuxCommand = readDefaultColor(!changeBgColor); // Read the Other Default Text Color. If the User is Changing Background, this will Read the Default Foreground
 
-    cout
-        << "\n\t/// " << sgrCommand << sgrAuxCommand << " Example Text " << ANSI_RESET << " ///\n";
-    change = booleanQuestion("\n\t--- Do you want to save this Color as Default?");
+    cout << "\n-- " << sgrCommand << sgrAuxCommand << " Example Text " << ANSI_RESET << '\n';
+    change = booleanQuestion("-- Do you want to save this Color as Default?");
   } while (!change);
 
   // Save Color as the Default Configuration
@@ -177,10 +182,10 @@ void getRGBTextColor(bool changeBgColor)
 
   if (changeBgColor)
   {
-    saveRGB("*** Background Color", ANSI_RGB_BG_COLOR, changeBgColor);
+    saveRGB("Background Color", ANSI_RGB_BG_COLOR, changeBgColor);
   }
   else
   {
-    saveRGB("*** Foreground Color", ANSI_RGB_FG_COLOR, changeBgColor);
+    saveRGB("Foreground Color", ANSI_RGB_FG_COLOR, changeBgColor);
   }
 }

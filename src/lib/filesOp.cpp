@@ -56,7 +56,7 @@ void writeDefaultColor(char *filename, string fileContent)
   fstream writeFile(filename, fstream::out | fstream::binary);
   if (!writeFile.is_open() || (removeResult != 0 && removeResult != 1))
   {
-    cout << "\nError: Cannot Write to " << filename;
+    cout << "\nError: Cannot Write to " << filename; // Cannot write to file
   }
   else
   {
@@ -92,7 +92,7 @@ string readDefaultColor(bool readBgColor)
       colorFormatFile >> c;
       if (colorFormatFile.good())
       {
-        sgrCommand += c;
+        sgrCommand += c; // Read Command Stored on the file
       }
       else
       {
@@ -118,4 +118,11 @@ string readDefaultColor(bool readBgColor)
   colorFormatFile.close();
 
   return sgrCommand;
+}
+
+// Read both Background and Foreground Default Text Color Format
+string readCompleteDefaultColor()
+{
+  string sgrCommand = readDefaultColor(true);        // SGR Command of the Default Background Color
+  return sgrCommand.append(readDefaultColor(false)); // SGR Command of the Default Foreground Color
 }
