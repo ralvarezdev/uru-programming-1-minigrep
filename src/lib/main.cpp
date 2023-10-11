@@ -25,7 +25,7 @@ int main(int argc, char **argv)
   2: -h // Here the program will print the Help Message
   */
 
-  bool isCommand = false;
+  bool askExit, exit, isCommand = false;
   char command;
   string findPhrase;
   string errorMessage = "Error: Wrong Command. Run '-h' to Check the Available Commands"; // Message Print when there's a Wrong Command as Input
@@ -34,248 +34,271 @@ int main(int argc, char **argv)
   fs::path userPath = fs::current_path();
   fs::path binPath = changeCwdToBin(argv[0]); // Change Current Working Directory
 
-  if (argc == 1)
+  do
   {
-    // If the program was executed outside of the terminal
-    helpMessage();
+    if (argc == 1)
+    {
+      // If the program was executed outside of the terminal
+      helpMessage();
 
-    string temp;
-    cout << "\n\n";
-    cin >> temp; // Enter the command
-    if (temp[0] == '-')
-    {
-      command = temp[1];
-      isCommand = true;
-      getline(cin, temp); // In case, the user typed other parameters, this prevent the app to crash
-    }
-    else
-    {
-      fileDir = temp;           // First input is the filepath
-      getline(cin, findPhrase); // Gets the word or phrase that will be searched throughout the file
-    }
-  }
-  else
-  {
-    if (argv[1][0] == '-')
-    {
-      command = argv[1][1]; // If it Starts with a '-', it's a Built-in Command of the Program
-      isCommand = true;
-    }
-    else if (argc < 2)
-    {
-      cout << errorMessage;
-      return -1;
-    }
-    else
-    {
-      isCommand = false;
-
-      // File Path
-      if (argv[argc - 1][0] == '.')
+      askExit = true;
+      string temp;
+      cout << "\n\n";
+      cin >> temp; // Enter the command
+      if (temp[0] == '-')
       {
-        fileDir = userPath;
-
-        string tempPath; // File directory path inside the userPath
-        char c;
-        for (int i = 2; i < strlen(argv[argc - 1]); i++)
-        {
-          c = argv[argc - 1][i];
-          if (c != '/')
-          {
-            tempPath += c;
-          }
-          else
-          {
-            tempPath.append("\\");
-          }
-        }
-        fileDir = fileDir / tempPath; // Join the two filepaths
+        command = temp[1];
+        isCommand = true;
+        getline(cin, temp); // In case, the user typed other parameters, this prevent the app to crash
       }
       else
       {
-        fileDir = argv[argc - 1]; // The last argument is the complete file path
+        fileDir = temp;           // First input is the filepath
+        getline(cin, findPhrase); // Gets the word or phrase that will be searched throughout the file
       }
-
-      for (int i = 1; i < argc - 1; i++)
-      {
-        findPhrase.append(argv[i]); // The arguments after the command that invokes the program and before the file path
-        findPhrase.append(" ");
-      }
-    }
-  }
-
-  if (isCommand)
-  {
-    if (command == 'h')
-    {
-      helpMessage(); // Print Helper Message
     }
     else
     {
-      switch (command)
-      {
-      case 'c':
-      case 'b':
-        getRGBTextColor(true); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
+      askExit = false; // Exit the Program After the first Loop
+      exit = true;
 
-        if (command != 'c')
-        {
-          break;
-        }
-        else
-        {
-          cout << "\n\n";
-        }
-      case 'f':
-        getRGBTextColor(false);
-        break;
-      default:
+      if (argv[1][0] == '-')
+      {
+        command = argv[1][1]; // If it Starts with a '-', it's a Built-in Command of the Program
+        isCommand = true;
+      }
+      else if (argc < 2)
+      {
         cout << errorMessage;
         return -1;
       }
-    }
-  }
-  else
-  {
-    // Reads, and prints the file
-    string sgrCommand = readDefaultColor(true); // SGR Command of the Default Background Color
-    sgrCommand.append(readDefaultColor(false)); // SGR Command of the Default Foreground Color
-
-    bool foundInCurrentLine;
-    char c;
-    int timesFound = 0, foundInLines = 0;     // Counters
-    int findLength = findPhrase.length() - 1; // Length of the Phrase that will be found. It has a whitespace at the end, so I substract a minus 1
-    string outputMessage;                     // Output Message
-
-    ifstream findInFile;
-    findInFile.open(fileDir); // Checking File...
-    if (!findInFile)
-    {
-      cout << "Error: File doesn't Exit or doesn't have the Permissions to Read it";
-      findInFile.close();
-      return -1;
-    }
-    else if (findLength != 1)
-    {
-      // Read line by line
-      bool coincidence;
-      string line;
-      int lineLength, lineLeftLength, i;
-
-      while (getline(findInFile, line))
+      else
       {
-        i = 0;
-        foundInCurrentLine = false;
-        coincidence = false;
-        lineLength = line.length();  // Length of the line read
-        lineLeftLength = lineLength; // Number of characters of the line string that hasn't been read
+        isCommand = false;
 
-        for (int s = 0; s < lineLength; s++)
+        // File Path
+        if (argv[argc - 1][0] == '.')
         {
-          c = line[s]; // Get character of string
-          if (!coincidence)
+          fileDir = userPath;
+
+          string tempPath; // File directory path inside the userPath
+          char c;
+          for (int i = 2; i < strlen(argv[argc - 1]); i++)
           {
-            if (c != findPhrase[0])
+            c = argv[argc - 1][i];
+            if (c != '/')
             {
-              i++;
+              tempPath += c;
             }
             else
             {
-              coincidence = true;
-              if (i != 0)
-              {
-                outputMessage.append(line.substr(s - i, i));
-              }
-              i = 1;
+              tempPath.append("\\");
             }
+          }
+          fileDir = fileDir / tempPath; // Join the two filepaths
+        }
+        else
+        {
+          fileDir = argv[argc - 1]; // The last argument is the complete file path
+        }
+
+        for (int i = 1; i < argc - 1; i++)
+        {
+          findPhrase.append(argv[i]); // The arguments after the command that invokes the program and before the file path
+          findPhrase.append(" ");
+        }
+      }
+    }
+
+    if (isCommand)
+    {
+      if (command == 'h')
+      {
+        if (argc == 1)
+        {
+          askExit = false;
+          exit = false;
+          cout << ANSI_CLEAR;
+        }
+        else
+        {
+          helpMessage(); // Print Helper Message
+        }
+      }
+      else
+      {
+        switch (command)
+        {
+        case 'c':
+        case 'b':
+          getRGBTextColor(true); // Asks for the RGB Color and Generates the CSI Command to CHange the Text Color on the Terminal
+
+          if (command != 'c')
+          {
+            break;
           }
           else
           {
-            if (i != findLength - 1)
+            cout << "\n\n";
+          }
+        case 'f':
+          getRGBTextColor(false);
+          break;
+        default:
+          cout << errorMessage;
+          return -1;
+        }
+      }
+    }
+    else
+    {
+      // Reads, and prints the file
+      string sgrCommand = readDefaultColor(true); // SGR Command of the Default Background Color
+      sgrCommand.append(readDefaultColor(false)); // SGR Command of the Default Foreground Color
+
+      bool foundInCurrentLine;
+      char c;
+      int timesFound = 0, foundInLines = 0;     // Counters
+      int findLength = findPhrase.length() - 1; // Length of the Phrase that will be found. It has a whitespace at the end, so I substract a minus 1
+      string outputMessage;                     // Output Message
+
+      ifstream findInFile;
+      findInFile.open(fileDir); // Checking File...
+      if (!findInFile)
+      {
+        cout << "Error: File doesn't Exit or doesn't have the Permissions to Read it";
+        findInFile.close();
+        return -1;
+      }
+      else if (findLength != 1)
+      {
+        // Read line by line
+        bool coincidence;
+        string line;
+        int lineLength, lineLeftLength, i;
+
+        while (getline(findInFile, line))
+        {
+          i = 0;
+          foundInCurrentLine = false;
+          coincidence = false;
+          lineLength = line.length();  // Length of the line read
+          lineLeftLength = lineLength; // Number of characters of the line string that hasn't been read
+
+          for (int s = 0; s < lineLength; s++)
+          {
+            c = line[s]; // Get character of string
+            if (!coincidence)
             {
-              if (c != findPhrase[i])
+              if (c != findPhrase[0])
               {
-                coincidence = false;
+                i++;
               }
-              i++;
-            }
-            else if (c != findPhrase[i])
-            {
-              i++;
-              coincidence = false;
+              else
+              {
+                coincidence = true;
+                if (i != 0)
+                {
+                  outputMessage.append(line.substr(s - i, i));
+                }
+                i = 1;
+              }
             }
             else
             {
-              timesFound++; // Number of coincidences
-              outputMessage.append(sgrCommand);
-              outputMessage.append(line.substr(s - i, findLength));
-              outputMessage.append(ANSI_RESET);
+              if (i != findLength - 1)
+              {
+                if (c != findPhrase[i])
+                {
+                  coincidence = false;
+                }
+                i++;
+              }
+              else if (c != findPhrase[i])
+              {
+                i++;
+                coincidence = false;
+              }
+              else
+              {
+                timesFound++; // Number of coincidences
+                outputMessage.append(sgrCommand);
+                outputMessage.append(line.substr(s - i, findLength));
+                outputMessage.append(ANSI_RESET);
 
-              i = 0;
-              coincidence = false;
+                i = 0;
+                coincidence = false;
+
+                if (!foundInCurrentLine)
+                {
+                  foundInLines++;
+                  foundInCurrentLine = true;
+                }
+              }
+            }
+
+            lineLeftLength--;
+
+            if ((findLength > lineLeftLength + i && coincidence) || (findLength > lineLeftLength && !coincidence))
+            {
+              outputMessage.append(line.substr(lineLength - lineLeftLength - i, lineLeftLength + i));
+              break;
+            }
+          }
+          outputMessage += '\n';
+        }
+      }
+      else
+      {
+        // Read Char by Char
+        while (true)
+        {
+          findInFile >> std::noskipws >> c;
+          if (findInFile.good())
+          {
+            if (c == '\n')
+            {
+              foundInCurrentLine = false;
+            }
+
+            if (c != findPhrase[0])
+            {
+              outputMessage += c;
+            }
+            else
+            {
+              timesFound++;
+              outputMessage.append(sgrCommand);
+              outputMessage += c;
+              outputMessage.append(ANSI_RESET);
 
               if (!foundInCurrentLine)
               {
                 foundInLines++;
-                foundInCurrentLine = true;
+                foundInCurrentLine = false;
               }
             }
           }
-
-          lineLeftLength--;
-
-          if ((findLength > lineLeftLength + i && coincidence) || (findLength > lineLeftLength && !coincidence))
+          else
           {
-            outputMessage.append(line.substr(lineLength - lineLeftLength - i, lineLeftLength + i));
+            outputMessage += '\n';
             break;
           }
         }
-        outputMessage += '\n';
       }
+      findInFile.close();
+
+      cout << outputMessage << string(50, '-') << '\n';
+      cout << sgrCommand << string(2, ' ') << timesFound << string(2, ' ') << ANSI_RESET << " Coincidences in ";
+      cout << sgrCommand << string(2, ' ') << foundInLines << string(2, ' ') << ANSI_RESET << " Lines";
     }
-    else
+
+    if (askExit)
     {
-      // Read Char by Char
-      while (true)
-      {
-        findInFile >> std::noskipws >> c;
-        if (findInFile.good())
-        {
-          if (c == '\n')
-          {
-            foundInCurrentLine = false;
-          }
-
-          if (c != findPhrase[0])
-          {
-            outputMessage += c;
-          }
-          else
-          {
-            timesFound++;
-            outputMessage.append(sgrCommand);
-            outputMessage += c;
-            outputMessage.append(ANSI_RESET);
-
-            if (!foundInCurrentLine)
-            {
-              foundInLines++;
-              foundInCurrentLine = false;
-            }
-          }
-        }
-        else
-        {
-          outputMessage += '\n';
-          break;
-        }
-      }
+      exit = booleanQuestion("\nDo you want to Exit the Program?");
+      cout << ANSI_CLEAR;
     }
-    findInFile.close();
+  } while (!exit);
 
-    cout << outputMessage << string(50, '-') << '\n';
-    cout << sgrCommand << string(2, ' ') << timesFound << string(2, ' ') << ANSI_RESET << " Coincidences in ";
-    cout << sgrCommand << string(2, ' ') << foundInLines << string(2, ' ') << ANSI_RESET << " Lines";
-  }
   return 0;
 }

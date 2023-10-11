@@ -5,6 +5,8 @@
 #define ANSI_START "\x1b"
 // Control Sequence Introducer (CSI)
 #define CSI "\x1b["
+// Clear Terminal
+#define ANSI_CLEAR "\033c"
 
 /*
 Select Graphic Rendition Control Sequences
