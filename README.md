@@ -24,3 +24,16 @@ To get started with the Minigrep source code, follow these instructions.
 
 4. Run the program by clicking the```main.exe``` inside the ```bin``` folder or by using a single-line command as:
     ```.\bin\main.exe phrase to find... filepath...``` (You must enter your own filepath and your own phrase to highlight).
+
+## Commands
+
+### Run
+```phraseToHighlight... filePath...``` To Highlight the Phrase
+
+### Change Text Colors
+```-c``` Change Background and Foreground Color
+```-b``` Change Background Color
+```-f``` Change Foreground Color
+
+### Help
+```-h``` Help
