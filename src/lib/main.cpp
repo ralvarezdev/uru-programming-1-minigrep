@@ -20,11 +20,10 @@ namespace fs = std::filesystem;
 /* This program uses ANSI Escape Codes */
 int main(int argc, char **argv)
 {
-  bool askExit, exit, isCommand = false;
+  bool askExit, exit, isCommand;
   char command;
-  string findPhrase;
+  string findPhrase, sgrCommand;
   string errorMessage = "Error: Wrong Command. Run '-h' to Check the Available Commands"; // Message Print when there's a Wrong Command as Input
-  string sgrCommand = readCompleteDefaultColor();                                         // Text Color Saved
 
   fs::path fileDir;
   fs::path userPath = fs::current_path();     // get Current Working Directory
@@ -32,6 +31,9 @@ int main(int argc, char **argv)
 
   do
   {
+    askExit = exit = isCommand = false;      // Reset Value
+    sgrCommand = readCompleteDefaultColor(); // Get Default Text Color Saved
+
     if (argc == 1)
     {
       // If the program was executed outside of the terminal
@@ -93,7 +95,10 @@ int main(int argc, char **argv)
       }
       else if (argc < 3)
       {
+        string tempInput;
         cout << errorMessage; // Wrong Command
+        cout << "\n\n-- Press ENTER to Exit: ";
+        getline(cin, tempInput);
         return -1;
       }
       else
