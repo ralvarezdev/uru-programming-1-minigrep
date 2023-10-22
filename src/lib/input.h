@@ -8,5 +8,6 @@ using std::string;
 void printTitle(string sgrCommand, string message);
 void helpMessage();
 bool booleanQuestion(string message);
+void ignoreInput();
 
 #endif

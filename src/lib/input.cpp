@@ -71,3 +71,12 @@ bool booleanQuestion(string message)
     }
   }
 }
+
+// This prevents the program to crash if there's more input
+void ignoreInput()
+{
+  while (getchar() != '\n')
+  {
+    cin.clear();
+  }
+}

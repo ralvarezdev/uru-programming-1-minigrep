@@ -4,11 +4,9 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "input.h"
 
 using std::cin;
 using std::cout;
-using std::getline;
 using std::setfill;
 using std::setw;
 using std::string;
@@ -112,12 +110,7 @@ void saveRGB(string message, string csiPrefix, bool changeBgColor)
       {
         cin >> rgbString[i]; // 0: Red, 1: Green, 2: Blue
       }
-
-      if (getchar() != '\n') // This prevents the program to crash if the user enters more than three parameters
-      {
-        string temp;
-        getline(cin, temp);
-      }
+      ignoreInput();
 
       for (int i = 0; i < 3; i++)
       {

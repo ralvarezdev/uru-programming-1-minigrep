@@ -1,7 +1,6 @@
 #include "ansiCodes.h"
 #include "filesOp.h"
 #include "input.h"
-#include "ansiCodes.h"
 #include "rgbColor.h"
 #include <iostream>
 #include <filesystem>
@@ -48,7 +47,7 @@ int main(int argc, char **argv)
       {
         command = args[1];
         isCommand = true;
-        getline(cin, args); // In case, the user typed other parameters, this prevent the app to crash
+        ignoreInput();
       }
       else
       {
@@ -93,15 +92,7 @@ int main(int argc, char **argv)
         command = argv[1][1]; // If it Starts with a '-', it's a Built-in Command of the Program
         isCommand = true;
       }
-      else if (argc < 3)
-      {
-        string tempInput;
-        cout << errorMessage; // Wrong Command
-        cout << "\n\n-- Press ENTER to Exit: ";
-        getline(cin, tempInput);
-        return -1;
-      }
-      else
+      else if (argc >= 3)
       {
         isCommand = false;
 
@@ -177,7 +168,8 @@ int main(int argc, char **argv)
           getRGBTextColor(false);
           break;
         default:
-          cout << errorMessage;
+          cout << errorMessage << "\n\n-- Press ENTER to Exit: "; // Press ENTER and Exit the Program
+          ignoreInput();
           return -1;
         }
       }
