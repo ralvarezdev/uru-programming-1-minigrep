@@ -13,17 +13,58 @@ Only C++.
 ## Getting Started
 To get started with the Minigrep source code, follow these instructions.
 
-### Installation
-1. Create a folder named as ```minigrep```. Change the Current Working Directory to that one.
+## Installation
 
-2. Clone this repository to your local machine using the following command:
-    ```git clone https://github.com/ralvarezdev/minigrep```
+<ol>
+<li>Clone this repository to your local machine using the following command:
 
-3. To successfully compile this program, use the following command:
-    ```g++ -o bin\main.exe src\lib\main.cpp src\lib\rgbColor.cpp src\lib\rgbColor.h src\lib\input.cpp src\lib\input.h src\lib\ansiCodes.h src\lib\filesOp.cpp src\lib\filesOp.h``` (You must have MinGW Compiler installed in your local machine).
+```git clone https://github.com/ralvarezdev/uru-programming-1-minigrep```
+</li>
 
-4. Run the program by clicking the```main.exe``` inside the ```bin``` folder or by using a single-line command as:
-    ```.\bin\main.exe phrase to find... filepath...``` (You must enter your own filepath and your own phrase to highlight).
+<li>Change your Current Working Directory to where the Repository was Cloned</li>
+
+<li>There are Two Ways to Compile the Program:</li>
+
+<ol>
+<li>With <strong>G++</strong> (You must have Installed <strong>MinGW Compiler</strong>). Use the following command:
+
+<details>
+<summary>Command for Windows</summary>
+
+```g++ -o bin\Minigrep.exe src\main.cpp src\lib\filesOp.cpp src\lib\filesOp.h src\lib\input.cpp src\lib\input.h src\lib\rgbColor.cpp src\lib\rgbColor.h```
+
+</details>
+
+<details>
+<summary>Command for Linux</summary>
+
+```g++ -o bin/Minigrep.exe src/main.cpp src/lib/filesOp.cpp src/lib/filesOp.h src/lib/input.cpp src/lib/input.h src/lib/rgbColor.cpp src/lib/rgbColor.h```
+
+</details></li>
+
+<li>With <strong>CMake</strong> (You must have Installed <strong>CMake and Make</strong>). First, Get to the <code>bin</code> Folder inside the Repository. Use the following command:
+
+<details>
+<summary>Command for Windows</summary>
+
+```cmake -S ..\ -G "MinGW Makefiles" -B .\ && make```
+
+</details>
+
+<details>
+<summary>Command for Linux</summary>
+
+```cmake -S ../ -G "MinGW Makefiles" -B ./ && make```
+
+</details></li></ol>
+
+<li>Run the program by clicking the <code>Minigrep.exe</code> or by using a single-line command as:
+
+```./bin/main.exe phrase to find... filepath...``` (You must enter your own filepath and your own phrase to highlight).
+</li>
+</ol>
+
+<strong>For a Better User Experience, Resize the Terminal Window to Fullscreen</strong>
 
 ## Commands
 
